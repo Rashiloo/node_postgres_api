@@ -1,33 +1,71 @@
 const models = require("../database/models");
 
-const createUser = async (req, res)  => {
-
-  try  {
-     const user = await models.User.create(req.body);
-     return res.status(201).json({
-	user
-     });
-  } catch (error)  {
-    return res.status(500).json( { error: error.message } );
-  }
-}
-
-const getAllUsers = async (req, res) => {
-  console.log('getting users');
-  console.log(models.User); 
+// Crear
+const createUser = async (req, res) => {
   try {
-    const users = await models.User.findAll(
-      {
-	include : []
-      });
+    const user = await models.User.create(req.body);
+    return res.status(201).json({ user });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+// Leer todos
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await models.User.findAll();
     return res.status(200).json({ users });
-  } catch(error) 
-  {
-    return res.status(500).send ( error.message );
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+// Actualizar
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // En Postgres returning funciona; en MySQL se ignoraría y podrías hacer un find después.
+    const [count, [updatedUser]] = await models.User.update(
+      req.body,
+      { where: { id }, returning: true }
+    );
+    if (count === 0) return res.status(404).json({ error: "Usuario no encontrado" });
+    return res.json({ user: updatedUser });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+// Borrar
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await models.User.destroy({ where: { id } });
+    if (!deleted) return res.status(404).json({ error: "Usuario no encontrado" });
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+const getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await models.User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    return res.status(200).json({ user });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
 
 module.exports = {
-   createUser,
-   getAllUsers
+  createUser,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  getUserById
 };
+
