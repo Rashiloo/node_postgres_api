@@ -1,5 +1,5 @@
 {
-  "name": "restapi_mysql",
+  "name": "restapi_postgres",
   "version": "1.0.0",
   "description": "rest api - postgres",
   "main": "index.js",
