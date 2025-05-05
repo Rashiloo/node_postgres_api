@@ -1,4 +1,4 @@
-const API_URL = "/api/motos"; // Ajusta el puerto si es distinto
+const API_URL = "/api/users"; // Ajusta el puerto si es distinto
 
 function getUsers() {
     $("#resultado").html("<p class='loading'>Cargando usuarios...</p>");
